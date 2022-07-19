@@ -6,6 +6,10 @@ import json
 
 from io import BytesIO
 
+st.set_page_config(
+        page_title="Get Predictions",
+)
+
 # Convert Image to Base64 
 def im_2_b64(image):
     buff = BytesIO()

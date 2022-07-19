@@ -5,6 +5,10 @@ from PIL import Image
 
 import uuid
 
+st.set_page_config(
+        page_title="Crop Exemplars",
+)
+
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
 print(st.secrets)

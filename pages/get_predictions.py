@@ -1,3 +1,4 @@
+from errno import EL
 import streamlit as st
 import os
 from PIL import Image
@@ -23,25 +24,28 @@ def b64_2_img(data):
     return Image.open(buff)
 
 import requests
-url = st.secrets["url"]
-st.subheader(f'Using {len(st.session_state["exemplars_img"])} exemplar(s)')
-# for f in os.listdir(str(st.session_state.id)):
-#   img = Image.open(str(st.session_state.id) + '/' + f)
-js = {}
-query =  im_2_b64(st.session_state.query_img.convert('RGB'))
-# st.text(type(str(query)))
-js['query'] = "data:image/png;base64,"+str(query)[2:]
-# st.text("data:image/png;base64,"+str(query)[2:])
-exemplars = []
-for ex in st.session_state.exemplars_img:
-  ex = im_2_b64(ex)
-  exemplars.append("data:image/png;base64,"+str(ex)[2:])
-js['exemplars'] = exemplars
-r = requests.post(url, json=js)
-# x = requests.post(url, data = json)
-st.text('Count: ' + str(r.json()['count']))
-viz = b64_2_img(r.json()['viz'].split(',')[1])
-st.image(viz)
+try:
+    url = st.secrets["url"]
+    st.subheader(f'Using {len(st.session_state["exemplars_img"])} exemplar(s)')
+    # for f in os.listdir(str(st.session_state.id)):
+    #   img = Image.open(str(st.session_state.id) + '/' + f)
+    js = {}
+    query =  im_2_b64(st.session_state.query_img.convert('RGB'))
+    # st.text(type(str(query)))
+    js['query'] = "data:image/png;base64,"+str(query)[2:]
+    # st.text("data:image/png;base64,"+str(query)[2:])
+    exemplars = []
+    for ex in st.session_state.exemplars_img:
+    ex = im_2_b64(ex)
+    exemplars.append("data:image/png;base64,"+str(ex)[2:])
+    js['exemplars'] = exemplars
+    r = requests.post(url, json=js)
+    # x = requests.post(url, data = json)
+    st.text('Count: ' + str(r.json()['count']))
+    viz = b64_2_img(r.json()['viz'].split(',')[1])
+    st.image(viz)
+except Exception as e:
+    st.text("Error occured, check your images or maybe the service is down!")
 
 # selected = []
 # # print(type(st.session_state.query)  )

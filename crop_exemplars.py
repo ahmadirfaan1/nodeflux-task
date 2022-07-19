@@ -21,6 +21,7 @@ if 'id' not in st.session_state:
 
 # Upload an image and set some options for demo purposes
 st.header("Class Agnostic Counting Demo")
+st.text("Refresh the tab if you want to change image")
 # if('query' not in st.session_state):
 if 'query_img' not in st.session_state:
   img_file = st.sidebar.file_uploader(label='Upload a file', type=['png', 'jpg'])

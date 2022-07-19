@@ -1,9 +1,7 @@
-from errno import EL
 import streamlit as st
-import os
 from PIL import Image
 import base64
-import json
+import time
 
 from io import BytesIO
 
@@ -24,51 +22,27 @@ def b64_2_img(data):
     return Image.open(buff)
 
 import requests
-try:
-    url = st.secrets["url"]
+url = st.secrets["url"]
+if("query_img" not in st.session_state):
+    st.subheader("Error, check your exemplars or the service is broken!")
+else:
     st.subheader(f'Using {len(st.session_state["exemplars_img"])} exemplar(s)')
-    # for f in os.listdir(str(st.session_state.id)):
-    #   img = Image.open(str(st.session_state.id) + '/' + f)
+
     js = {}
     query =  im_2_b64(st.session_state.query_img.convert('RGB'))
-    # st.text(type(str(query)))
+
     js['query'] = "data:image/png;base64,"+str(query)[2:]
-    # st.text("data:image/png;base64,"+str(query)[2:])
+
     exemplars = []
     for ex in st.session_state.exemplars_img:
-    ex = im_2_b64(ex)
-    exemplars.append("data:image/png;base64,"+str(ex)[2:])
+        ex = im_2_b64(ex)
+        exemplars.append("data:image/png;base64,"+str(ex)[2:])
     js['exemplars'] = exemplars
+    start_time = time.time()
     r = requests.post(url, json=js)
-    # x = requests.post(url, data = json)
+    end_time = time.time()
+
     st.text('Count: ' + str(r.json()['count']))
     viz = b64_2_img(r.json()['viz'].split(',')[1])
     st.image(viz)
-except Exception as e:
-    st.text("Error occured, check your images or maybe the service is down!")
-
-# selected = []
-# # print(type(st.session_state.query)  )
-# st.image(Image.open(st.session_state.query), caption='Query Image')
-
-# for f in os.listdir(str(st.session_state.id)):
-#   if('png' in f):
-#     img = Image.open(str(st.session_state.id) + '/' + f)
-#     st.image(img)
-#     if(st.radio(str(f), ('No', 'Use')) == 'Use'):
-#       selected.append(f)
-
-# print(selected)
-    # buttons.append(st.radio(str(f), ('No', 'Use'), key=f))
-# print(st.session_state.query.name)
-# next = st.button('Go to next page', key='next')
-# selected_exemplars = []
-
-# for button in buttons:
-#   if(button == 'Use'):
-#     selected_exemplars.append(button.key)
-
-# print(selected_exemplars)
-# for i, button in enumerate(buttons):
-#   if button:
-#     st.write(f"{i} button was clicked")
+    st.text('Time taken from request to result: ' + str(end_time-start_time))
